@@ -7,6 +7,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
+from .documents import DOCUMENT_TYPES, Document
 from .transcribe import SUPPORTED_LANGUAGES, AudioTooLong, transcribe_file
 
 logger = logging.getLogger("dunia-box")
@@ -17,7 +18,7 @@ ALLOWED_EXTENSIONS = {
 }
 CHUNK_SIZE = 1024 * 1024
 
-app = FastAPI(title="Dunia Box API", version="0.2.0")
+app = FastAPI(title="Dunia Box API", version="0.3.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,6 +36,19 @@ def health() -> dict:
         "fallback_to_whisper": settings.fallback_to_whisper,
         "whisper_model": settings.model_name,
     }
+
+
+@app.get("/document-types")
+def document_types() -> list[dict]:
+    return [
+        {"type": name, "schema": model.model_json_schema()}
+        for name, model in DOCUMENT_TYPES.items()
+    ]
+
+
+@app.post("/documents/validate")
+def validate_document(doc: Document) -> dict:
+    return doc.model_dump(mode="json")
 
 
 @app.post("/transcribe")
