@@ -17,7 +17,7 @@ ALLOWED_EXTENSIONS = {
 }
 CHUNK_SIZE = 1024 * 1024
 
-app = FastAPI(title="Dunia Box API", version="0.1.0")
+app = FastAPI(title="Dunia Box API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,7 +29,12 @@ app.add_middleware(
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "model": settings.model_name}
+    return {
+        "status": "ok",
+        "stt_provider": settings.stt_provider,
+        "fallback_to_whisper": settings.fallback_to_whisper,
+        "whisper_model": settings.model_name,
+    }
 
 
 @app.post("/transcribe")
