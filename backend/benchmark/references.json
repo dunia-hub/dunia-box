@@ -1,0 +1,14 @@
+{
+  "mixed.m4a": {
+    "language": "auto",
+    "text": "Niandikie invoice ya Wanjiku Traders, three days za plumbing, elfu tano per day, due Friday."
+  },
+  "swahili.m4a": {
+    "language": "sw",
+    "text": "Nataka kutuma invoice kwa Wanjiku Traders, shilingi elfu tano, ilipwe Ijumaa."
+  },
+  "english.m4a": {
+    "language": "en",
+    "text": "Write a receipt for Otieno Hardware, two bags of cement, one thousand five hundred shillings each."
+  }
+}
