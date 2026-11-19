@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Node / web
+node_modules/
+dist/
+.vite/
+*.log
+
+# Anchor / Solana
+program/target/
+program/.anchor/
+program/test-ledger/
+*.keypair.json
+id.json
+
+# Audio and generated files
+samples/*.wav
+samples/*.mp3
+samples/*.m4a
+samples/*.ogg
+output/
+*.pdf
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
