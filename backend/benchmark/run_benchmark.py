@@ -9,7 +9,7 @@ import httpx
 import jiwer
 
 from app.config import settings
-from app.transcribe import get_model, transcribe_file
+from app.transcribe import get_model, transcribe_whisper
 
 ROOT = Path(__file__).resolve().parents[2]
 SAMPLES = ROOT / "samples"
@@ -60,7 +60,7 @@ def main() -> None:
             continue
 
         t0 = time.perf_counter()
-        w_text = transcribe_file(str(path), ref["language"])["text"]
+        w_text = transcribe_whisper(str(path), ref["language"])["text"]
         w_time = round(time.perf_counter() - t0, 2)
 
         s_text, s_time = "", None
