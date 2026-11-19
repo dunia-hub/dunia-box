@@ -95,7 +95,7 @@ class Receipt(PricedDocument):
     type: Literal["receipt"] = "receipt"
     issuer: Party
     payer: Party
-    payment_method: PaymentMethod = "mpesa"
+    payment_method: PaymentMethod | None = None
     payment_reference: str | None = None  # M-PESA code or transaction signature
     paid_on: date | None = None
     notes: str | None = None

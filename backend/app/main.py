@@ -1,13 +1,17 @@
 import logging
 import os
 import tempfile
+from datetime import date
+from typing import Literal
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 from .config import settings
-from .documents import DOCUMENT_TYPES, Document
+from .documents import DOCUMENT_TYPES, Document, Party
+from .extract import ExtractionError, extract_document
 from .transcribe import SUPPORTED_LANGUAGES, AudioTooLong, transcribe_file
 
 logger = logging.getLogger("dunia-box")
@@ -18,7 +22,11 @@ ALLOWED_EXTENSIONS = {
 }
 CHUNK_SIZE = 1024 * 1024
 
-app = FastAPI(title="Dunia Box API", version="0.3.0")
+DocumentType = Literal[
+    "invoice", "receipt", "quotation", "memo", "letter", "minutes", "sale_agreement"
+]
+
+app = FastAPI(title="Dunia Box API", version="0.4.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +36,14 @@ app.add_middleware(
 )
 
 
+class ExtractRequest(BaseModel):
+    transcript: str = Field(min_length=1, max_length=20000)
+    language: Literal["sw", "en"] = "en"
+    document_type: DocumentType | None = None
+    profile: Party | None = None
+    today: date | None = None
+
+
 @app.get("/health")
 def health() -> dict:
     return {
@@ -35,6 +51,7 @@ def health() -> dict:
         "stt_provider": settings.stt_provider,
         "fallback_to_whisper": settings.fallback_to_whisper,
         "whisper_model": settings.model_name,
+        "llm_model": settings.llm_model,
     }
 
 
@@ -49,6 +66,22 @@ def document_types() -> list[dict]:
 @app.post("/documents/validate")
 def validate_document(doc: Document) -> dict:
     return doc.model_dump(mode="json")
+
+
+@app.post("/extract")
+async def extract(req: ExtractRequest) -> dict:
+    try:
+        return await run_in_threadpool(
+            extract_document,
+            req.transcript,
+            req.language,
+            req.document_type,
+            req.profile,
+            req.today,
+        )
+    except ExtractionError as exc:
+        logger.warning("Extraction failed: %s", exc)
+        raise HTTPException(502, str(exc))
 
 
 @app.post("/transcribe")

@@ -23,6 +23,10 @@ class Settings:
     device: str = os.getenv("WHISPER_DEVICE", "cpu")
     compute_type: str = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
 
+    llm_base_url: str = os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
+    llm_model: str = os.getenv("LLM_MODEL", "openai/gpt-oss-120b")
+    llm_api_key: str = os.getenv("LLM_API_KEY", "").strip()
+
     max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "100"))
     max_duration_min: int = int(os.getenv("MAX_DURATION_MIN", "30"))
     allowed_origins: tuple[str, ...] = tuple(
