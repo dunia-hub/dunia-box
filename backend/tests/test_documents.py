@@ -139,3 +139,17 @@ def test_validate_endpoint_returns_totals():
 def test_validate_endpoint_rejects_bad_doc():
     res = client.post("/documents/validate", json=invoice(items=[]))
     assert res.status_code == 422
+
+
+def test_api_output_can_be_sent_back():
+    first = client.post("/documents/validate", json=invoice()).json()
+    assert "total" in first and "amount" in first["items"][0]
+    second = client.post("/documents/validate", json=first)
+    assert second.status_code == 200
+    assert second.json()["total"] == first["total"]
+
+
+def test_render_accepts_api_output():
+    doc = client.post("/documents/validate", json=invoice()).json()
+    res = client.post("/render/pdf", json=doc)
+    assert res.status_code == 200
