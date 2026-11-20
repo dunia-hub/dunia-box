@@ -19,6 +19,10 @@ class Settings:
     scribe_model: str = os.getenv("SCRIBE_MODEL", "scribe_v1")
     elevenlabs_api_key: str = os.getenv("ELEVENLABS_API_KEY", "").strip()
 
+    tts_enabled: bool = _bool("TTS_ENABLED", "true")
+    tts_model: str = os.getenv("TTS_MODEL", "eleven_v3")
+    tts_voice_id: str = os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM").strip()
+
     model_name: str = os.getenv("WHISPER_MODEL", "large-v3-turbo")
     device: str = os.getenv("WHISPER_DEVICE", "cpu")
     compute_type: str = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
