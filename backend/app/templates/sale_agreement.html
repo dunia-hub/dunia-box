@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{{ m.header(doc, t) }}
+<div class="strip">
+  <div class="cell"><div class="label">{{ t('date') }}</div><div class="value">{{ doc.issue_date | date(doc.language) }}</div></div>
+  <div class="cell"><div class="label">{{ t('price') }}</div><div class="value">{{ doc.price | money(doc.currency) }}</div></div>
+  <div class="cell highlight"><div class="label">{{ t('balance') }}</div><div class="value">{{ doc.balance | money(doc.currency) }}</div></div>
+</div>
+<div class="parties">
+  {{ m.party(doc.seller, t('seller')) }}
+  {{ m.party(doc.buyer, t('buyer')) }}
+</div>
+<table class="info">
+  <tr><td class="k">{{ t('item') }}</td><td><strong>{{ doc.item }}</strong></td></tr>
+  {% if doc.item_details %}<tr><td class="k">{{ t('item_details') }}</td><td>{{ doc.item_details }}</td></tr>{% endif %}
+  <tr><td class="k">{{ t('deposit') }}</td><td>{{ doc.deposit | money(doc.currency) }}</td></tr>
+  {% if doc.payment_terms %}<tr><td class="k">{{ t('payment_terms') }}</td><td>{{ doc.payment_terms }}</td></tr>{% endif %}
+  {% if doc.handover_date %}<tr><td class="k">{{ t('handover_date') }}</td><td>{{ doc.handover_date | date(doc.language) }}</td></tr>{% endif %}
+</table>
+{% if doc.conditions %}<h2>{{ t('conditions') }}</h2><ol>{% for c in doc.conditions %}<li>{{ c }}</li>{% endfor %}</ol>{% endif %}
+<div class="signatures">
+  <div class="signature"><div class="line">{{ t('seller') }}: {{ doc.seller.name }}</div></div>
+  <div class="signature"><div class="line">{{ t('buyer') }}: {{ doc.buyer.name }}</div></div>
+</div>
+{% if doc.witnesses %}
+<h2>{{ t('witnesses') }}</h2>
+<div class="signatures" style="margin-top:0">
+  {% for w in doc.witnesses %}<div class="signature"><div class="line">{{ w.name }}</div></div>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

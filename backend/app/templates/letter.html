@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{{ m.header(doc, t, doc.sender) }}
+<div style="margin:18px 0 14px">
+  <div>{{ doc.issue_date | date(doc.language) }}</div>
+  <div style="margin-top:10px"><strong>{{ doc.recipient.name }}</strong></div>
+  {% if doc.recipient.address %}<div>{{ doc.recipient.address }}</div>{% endif %}
+</div>
+<p><strong>{{ t('subject') | upper }}: {{ doc.subject | upper }}</strong></p>
+{% if doc.salutation %}<p>{{ doc.salutation }}</p>{% endif %}
+<div class="body-text">{{ doc.body }}</div>
+<p style="margin-top:22px">{{ doc.closing or '' }}</p>
+<div class="signatures" style="margin-top:10px">
+  <div class="signature"><div class="line">{{ doc.sender.name }}</div></div>
+  <div class="signature"></div>
+</div>
+{% endblock %}

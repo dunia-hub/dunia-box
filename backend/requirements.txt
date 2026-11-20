@@ -4,3 +4,5 @@ python-multipart>=0.0.9
 faster-whisper>=1.1.0
 av>=14,<17
 python-dotenv>=1.0
+weasyprint>=66
+jinja2>=3.1

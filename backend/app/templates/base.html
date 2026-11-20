@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<title>{{ t(doc.type) }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 14mm 14mm 20mm;
+    @bottom-left { content: "{{ t('made_with') }}"; font-family: "Noto Sans", sans-serif; font-size: 7.5pt; color: #8a8f98; }
+    @bottom-right { content: "{{ t('document_id') }}: {{ short_id }}"; font-family: "Noto Sans", sans-serif; font-size: 7.5pt; color: #8a8f98; }
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Noto Sans", "DejaVu Sans", sans-serif; font-size: 9.5pt; color: #1b1f3b; line-height: 1.45; margin: 0; }
+  .serif { font-family: "Noto Serif", "DejaVu Serif", serif; }
+
+  .band { height: 5px; background: #0e7c66; margin-bottom: 16px; }
+  .row { display: table; width: 100%; table-layout: fixed; }
+  .col { display: table-cell; vertical-align: top; }
+  .right { text-align: right; }
+
+  .brand { font-size: 15pt; font-weight: 700; }
+  .contact { color: #5b6170; font-size: 8.5pt; }
+  .doc-title { font-family: "Noto Serif", "DejaVu Serif", serif; font-size: 24pt; color: #0e7c66; text-transform: uppercase; letter-spacing: 1.5px; line-height: 1.1; }
+  .doc-ref { color: #5b6170; font-size: 9pt; margin-top: 4px; }
+
+  .strip { display: table; width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 6px 0; margin: 16px 0 14px; }
+  .cell { display: table-cell; background: #f3f6f5; border-radius: 6px; padding: 8px 10px; vertical-align: top; }
+  .cell.highlight { background: #0e7c66; color: #ffffff; }
+  .label { font-size: 7pt; text-transform: uppercase; letter-spacing: 0.9px; color: #6b7280; }
+  .cell.highlight .label { color: #cfede6; }
+  .value { font-size: 10.5pt; font-weight: 700; margin-top: 2px; }
+
+  .parties { display: table; width: 100%; table-layout: fixed; margin-bottom: 14px; }
+  .party { display: table-cell; vertical-align: top; padding-right: 16px; }
+  .party .heading { font-size: 7pt; text-transform: uppercase; letter-spacing: 0.9px; color: #6b7280; margin-bottom: 3px; }
+  .party .name { font-weight: 700; font-size: 11pt; }
+
+  table { width: 100%; border-collapse: collapse; }
+  table.items th { background: #1b1f3b; color: #ffffff; text-align: left; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.7px; padding: 7px 8px; }
+  table.items td { padding: 8px; border-bottom: 1px solid #e6e8ec; vertical-align: top; }
+  table.items tbody tr:nth-child(even) td { background: #fafbfb; }
+  .num { text-align: right; white-space: nowrap; }
+
+  table.totals { width: 46%; margin-left: auto; margin-top: 10px; }
+  table.totals td { padding: 4px 8px; }
+  table.totals tr.grand td { background: #0e7c66; color: #ffffff; font-weight: 700; font-size: 11.5pt; padding: 8px; }
+
+  table.info td { padding: 6px 8px; border-bottom: 1px solid #ececec; vertical-align: top; }
+  table.info td.k { width: 26%; color: #6b7280; }
+
+  h2 { font-family: "Noto Serif", "DejaVu Serif", serif; font-size: 11.5pt; color: #0e7c66; margin: 18px 0 6px; }
+  .body-text { white-space: pre-wrap; }
+  .box { background: #f3f6f5; border-radius: 6px; padding: 10px 12px; margin-top: 14px; }
+  .stamp { display: inline-block; border: 2px solid #0e7c66; color: #0e7c66; padding: 3px 12px; border-radius: 4px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; transform: rotate(-6deg); margin-top: 8px; }
+
+  .signatures { display: table; width: 100%; table-layout: fixed; margin-top: 44px; }
+  .signature { display: table-cell; padding-right: 24px; }
+  .signature .line { border-top: 1px solid #1b1f3b; margin-top: 44px; padding-top: 4px; font-size: 8.5pt; }
+  ol, ul { margin: 4px 0 0 18px; padding: 0; }
+  li { margin-bottom: 3px; }
+</style>
+</head>
+<body>
+<div class="band"></div>
+{% block content %}{% endblock %}
+</body>
+</html>

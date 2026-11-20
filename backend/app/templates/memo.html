@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{{ m.header(doc, t) }}
+<table class="info" style="margin-top:16px">
+  <tr><td class="k">{{ t('date') }}</td><td>{{ doc.issue_date | date(doc.language) }}</td></tr>
+  <tr><td class="k">{{ t('to') }}</td><td>{{ doc.to | join(', ') }}</td></tr>
+  <tr><td class="k">{{ t('from') }}</td><td>{{ doc.sender }}</td></tr>
+  {% if doc.cc %}<tr><td class="k">{{ t('cc') }}</td><td>{{ doc.cc | join(', ') }}</td></tr>{% endif %}
+  <tr><td class="k">{{ t('subject') }}</td><td><strong>{{ doc.subject }}</strong></td></tr>
+</table>
+<div class="body-text" style="margin-top:18px">{{ doc.body }}</div>
+{% endblock %}
