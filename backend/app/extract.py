@@ -35,16 +35,26 @@ SPEAKER_FIELD = {
     "sale_agreement": "seller",
 }
 
+# The other party, which must never be the speaker.
+COUNTERPARTY_FIELD = {
+    "invoice": "client",
+    "quotation": "client",
+    "receipt": "payer",
+    "letter": "recipient",
+    "sale_agreement": "buyer",
+}
+
 RULES = """Rules:
 - Use only information in the transcript and the speaker profile. Never invent names, amounts, dates, phone numbers, addresses or payment methods. If something is not said, leave it out.
 - Swahili numbers: mia = 100, elfu = 1,000, laki = 100,000, milioni = 1,000,000. "elfu tano" = 5000, "elfu mbili mia tano" = 2500, "laki moja" = 100000. Write all amounts as plain numbers without commas.
 - "bob", "shilingi", "ksh" and "shillings" mean currency KES.
-- "three days of plumbing, 5000 per day" means one item: quantity 3, unit "day", unit_price 5000.
+- "three days of plumbing, 5000 per day" means one item: quantity 3, unit "day", unit_price 5000. Write the unit in {language_name} too (in Swahili "day" is "siku", "bag" is "mfuko", "hour" is "saa").
 - If the speaker does not say what an item is, leave out its description. Never use an amount or a currency as a description.
 - Do not calculate totals, subtotals, tax amounts or balances. Code does that.
-- Dates use YYYY-MM-DD. Today is {today}. Never calculate dates yourself. For weekday names and words like kesho or tomorrow, copy the date from this calendar:
+- Dates use YYYY-MM-DD. Today is {today}. Never calculate dates yourself; copy them from this calendar:
 {calendar}
-- The speaker is the person in the speaker profile. Do not put the speaker as the client, payer, recipient or buyer unless the transcript says so.
+- A weekday name always means the next one after today, never today itself. "kesho" or "tomorrow" is the day after today.
+- The speaker is the person in the speaker profile. Never put the speaker as the client, payer, recipient or buyer. If the other party is not named, leave it out.
 - Write all free text (item descriptions, subject, body, notes, conditions) in {language_name}, translating where needed. For example, in Swahili "plumbing" becomes "Kazi ya mabomba".
 - Keep people and business names as spoken, with normal capitalisation (for example "Otieno Hardware").
 - Return one JSON object matching the schema. Include "type". No extra keys."""
@@ -121,6 +131,12 @@ def _drop_nulls(value):
     return value
 
 
+def _same_name(a: str | None, b: str | None) -> bool:
+    if not a or not b:
+        return False
+    return " ".join(a.lower().split()) == " ".join(b.lower().split())
+
+
 def _prepare(data: dict, doc_type: str, language: str, today: date, profile: Party | None) -> dict:
     data = _drop_nulls(data if isinstance(data, dict) else {})
     data["type"] = doc_type
@@ -133,6 +149,11 @@ def _prepare(data: dict, doc_type: str, language: str, today: date, profile: Par
             data.setdefault(SPEAKER_FIELD[doc_type], speaker)
         elif doc_type == "memo":
             data.setdefault("sender", profile.name)
+
+        # The speaker can never be the other party; drop it so the agent asks.
+        other = COUNTERPARTY_FIELD.get(doc_type)
+        if other and isinstance(data.get(other), dict) and _same_name(data[other].get("name"), profile.name):
+            data.pop(other)
     return data
 
 

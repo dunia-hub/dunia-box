@@ -130,3 +130,15 @@ def test_receipt_payment_method_not_defaulted(monkeypatch):
     fake_llm(monkeypatch, receipt)
     out = extract.extract_document("...", "en", "receipt", PROFILE, TODAY)
     assert out["document"]["payment_method"] is None
+
+
+def test_speaker_as_client_is_removed(monkeypatch):
+    data = {**INVOICE, "client": {"name": "fatuma  plumbing"}}
+    fake_llm(monkeypatch, data)
+    out = extract.extract_document("...", "sw", "invoice", PROFILE, TODAY)
+    assert out["complete"] is False
+    assert "client" in out["missing_fields"]
+
+
+def test_rules_say_weekday_is_never_today():
+    assert "never today itself" in extract.RULES
