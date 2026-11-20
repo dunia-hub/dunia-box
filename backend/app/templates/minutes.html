@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{{ m.header(doc, t) }}
+<div class="serif" style="font-size:15pt; font-weight:700; margin:14px 0 8px">{{ doc.title }}</div>
+<table class="info">
+  <tr><td class="k">{{ t('date') }}</td><td>{{ doc.issue_date | date(doc.language) }}</td></tr>
+  {% if doc.location %}<tr><td class="k">{{ t('location') }}</td><td>{{ doc.location }}</td></tr>{% endif %}
+  {% if doc.chair %}<tr><td class="k">{{ t('chair') }}</td><td>{{ doc.chair }}</td></tr>{% endif %}
+  <tr><td class="k">{{ t('attendees') }}</td><td>{{ doc.attendees | join(', ') }}</td></tr>
+  {% if doc.apologies %}<tr><td class="k">{{ t('apologies') }}</td><td>{{ doc.apologies | join(', ') }}</td></tr>{% endif %}
+</table>
+{% if doc.agenda %}<h2>{{ t('agenda') }}</h2><ol>{% for a in doc.agenda %}<li>{{ a }}</li>{% endfor %}</ol>{% endif %}
+{% if doc.discussion %}
+<h2>{{ t('discussion') }}</h2>
+{% for d in doc.discussion %}<p><strong>{{ d.topic }}.</strong> {{ d.notes }}</p>{% endfor %}
+{% endif %}
+{% if doc.decisions %}<h2>{{ t('decisions') }}</h2><ol>{% for d in doc.decisions %}<li>{{ d }}</li>{% endfor %}</ol>{% endif %}
+{% if doc.action_items %}
+<h2>{{ t('action_items') }}</h2>
+<table class="items">
+  <thead><tr><th>{{ t('description') }}</th><th>{{ t('owner') }}</th><th>{{ t('due') }}</th></tr></thead>
+  <tbody>
+  {% for a in doc.action_items %}
+    <tr><td>{{ a.task }}</td><td>{{ a.owner or '' }}</td><td>{{ a.due | date(doc.language) }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% if doc.next_meeting %}<div class="box"><strong>{{ t('next_meeting') }}:</strong> {{ doc.next_meeting | date(doc.language) }}</div>{% endif %}
+{% endblock %}

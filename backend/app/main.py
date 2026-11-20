@@ -4,7 +4,7 @@ import tempfile
 from datetime import date
 from typing import Literal
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Response, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from .config import settings
 from .documents import DOCUMENT_TYPES, Document, Party
 from .extract import ExtractionError, extract_document
+from .render import fingerprint, render_pdf, whatsapp_text
 from .transcribe import SUPPORTED_LANGUAGES, AudioTooLong, transcribe_file
 
 logger = logging.getLogger("dunia-box")
@@ -26,13 +27,14 @@ DocumentType = Literal[
     "invoice", "receipt", "quotation", "memo", "letter", "minutes", "sale_agreement"
 ]
 
-app = FastAPI(title="Dunia Box API", version="0.4.0")
+app = FastAPI(title="Dunia Box API", version="0.5.0")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=list(settings.allowed_origins),
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
+    expose_headers=["X-Document-Id", "Content-Disposition"],
 )
 
 
@@ -66,6 +68,28 @@ def document_types() -> list[dict]:
 @app.post("/documents/validate")
 def validate_document(doc: Document) -> dict:
     return doc.model_dump(mode="json")
+
+
+@app.post("/render/pdf")
+async def render_pdf_endpoint(doc: Document) -> Response:
+    data = doc.model_dump(mode="json")
+    doc_id = fingerprint(data)
+    pdf = await run_in_threadpool(render_pdf, data)
+    filename = f"{data['type']}-{doc_id[:12]}.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-Document-Id": doc_id,
+        },
+    )
+
+
+@app.post("/render/whatsapp")
+def render_whatsapp_endpoint(doc: Document) -> dict:
+    data = doc.model_dump(mode="json")
+    return {"document_id": fingerprint(data), "text": whatsapp_text(data)}
 
 
 @app.post("/extract")

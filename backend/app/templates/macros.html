@@ -1,0 +1,61 @@
+{% macro header(doc, t, owner=None) %}
+<div class="row">
+  <div class="col">
+    {% if owner %}
+      <div class="brand">{{ owner.name }}</div>
+      <div class="contact">
+        {% if owner.address %}{{ owner.address }}<br>{% endif %}
+        {% if owner.phone %}{{ owner.phone }}<br>{% endif %}
+        {% if owner.email %}{{ owner.email }}{% endif %}
+      </div>
+    {% endif %}
+  </div>
+  <div class="col right">
+    <div class="doc-title">{{ t(doc.type) }}</div>
+    {% if doc.reference %}<div class="doc-ref">{{ t('reference') }} {{ doc.reference }}</div>{% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro party(p, heading) %}
+<div class="party">
+  <div class="heading">{{ heading }}</div>
+  <div class="name">{{ p.name }}</div>
+  {% if p.address %}<div>{{ p.address }}</div>{% endif %}
+  {% if p.phone %}<div>{{ p.phone }}</div>{% endif %}
+  {% if p.email %}<div>{{ p.email }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro items_table(doc, t) %}
+<table class="items">
+  <thead>
+    <tr>
+      <th>{{ t('description') }}</th>
+      <th class="num">{{ t('qty') }}</th>
+      <th class="num">{{ t('unit_price') }}</th>
+      <th class="num">{{ t('amount') }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in doc['items'] %}
+    <tr>
+      <td>{{ item.description }}</td>
+      <td class="num">{{ item.quantity | qty }}{% if item.unit %} {{ item.unit }}{% endif %}</td>
+      <td class="num">{{ item.unit_price | money(doc.currency) }}</td>
+      <td class="num">{{ item.amount | money(doc.currency) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+{% macro totals(doc, t) %}
+<table class="totals">
+  <tr><td>{{ t('subtotal') }}</td><td class="num">{{ doc.subtotal | money(doc.currency) }}</td></tr>
+  {% if doc.tax and doc.tax != "0.00" %}
+  <tr><td>{{ t('tax') }}</td><td class="num">{{ doc.tax | money(doc.currency) }}</td></tr>
+  {% endif %}
+  <tr class="grand"><td>{{ t('total') }}</td><td class="num">{{ doc.total | money(doc.currency) }}</td></tr>
+</table>
+{% endmacro %}

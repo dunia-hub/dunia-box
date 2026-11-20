@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{{ m.header(doc, t, doc.issuer) }}
+<div class="strip">
+  <div class="cell"><div class="label">{{ t('date') }}</div><div class="value">{{ doc.issue_date | date(doc.language) }}</div></div>
+  <div class="cell"><div class="label">{{ t('valid_until') }}</div><div class="value">{{ doc.valid_until | date(doc.language) if doc.valid_until else '-' }}</div></div>
+  <div class="cell highlight"><div class="label">{{ t('total') }}</div><div class="value">{{ doc.total | money(doc.currency) }}</div></div>
+</div>
+<div class="parties">{{ m.party(doc.client, t('bill_to')) }}</div>
+{{ m.items_table(doc, t) }}
+{{ m.totals(doc, t) }}
+{% if doc.notes %}<div class="box"><strong>{{ t('notes') }}:</strong> {{ doc.notes }}</div>{% endif %}
+{% endblock %}

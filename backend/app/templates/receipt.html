@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{{ m.header(doc, t, doc.issuer) }}
+<div class="strip">
+  <div class="cell"><div class="label">{{ t('date') }}</div><div class="value">{{ doc.issue_date | date(doc.language) }}</div></div>
+  <div class="cell"><div class="label">{{ t('payment_method') }}</div><div class="value">{{ t(doc.payment_method) if doc.payment_method else '-' }}</div></div>
+  <div class="cell highlight"><div class="label">{{ t('paid') }}</div><div class="value">{{ doc.total | money(doc.currency) }}</div></div>
+</div>
+<div class="parties">{{ m.party(doc.payer, t('received_from')) }}</div>
+{{ m.items_table(doc, t) }}
+{{ m.totals(doc, t) }}
+<div class="row" style="margin-top:14px">
+  <div class="col">
+    {% if doc.payment_reference %}<div><span class="label">{{ t('payment_reference') }}</span><br><strong>{{ doc.payment_reference }}</strong></div>{% endif %}
+    {% if doc.paid_on %}<div style="margin-top:6px"><span class="label">{{ t('paid_on') }}</span><br>{{ doc.paid_on | date(doc.language) }}</div>{% endif %}
+  </div>
+  <div class="col right"><span class="stamp">{{ t('paid') }}</span></div>
+</div>
+{% if doc.notes %}<div class="box"><strong>{{ t('notes') }}:</strong> {{ doc.notes }}</div>{% endif %}
+{% endblock %}
