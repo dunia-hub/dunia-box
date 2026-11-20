@@ -25,6 +25,16 @@ def money(value: Decimal) -> Decimal:
 class Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _drop_computed(cls, data):
+        # Calculated fields come back from the API; ignore them on input.
+        if isinstance(data, dict):
+            computed = set(cls.model_computed_fields)
+            if computed:
+                data = {k: v for k, v in data.items() if k not in computed}
+        return data
+
 
 # ---------- Shared parts ----------
 
